@@ -14,27 +14,30 @@ const UserSchema = new Schema(
     password: {
       type: String,
       required: true,
-      select: false,
     },
     token: {
       type: String,
-      required: true,
-      select: false,
+      default: null,
     },
     profilePic: {
       type: String,
+      default: "",
     },
     bio: {
       type: String,
+      default: "",
     },
     isVerified: {
       type: Boolean,
+      default: false,
     },
     otp: {
       type: Number,
+      default: null,
     },
     otpExpiry: {
       type: Date,
+      default: null,
     },
     posts: [
       {
