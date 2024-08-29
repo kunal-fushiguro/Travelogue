@@ -10,6 +10,11 @@ import {
   updateUser,
   verifyUser,
 } from "../controllers/UserControllers.js";
+import {
+  createPost,
+  updatePost,
+  deletePost,
+} from "../controllers/JourneyControllers.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = Router();
@@ -24,4 +29,10 @@ router.route("/users/verify").patch(authMiddleware, verifyUser);
 router.route("/users/reset").patch(authMiddleware, resetPassword);
 router.route("/users/update").patch(authMiddleware, updateUser);
 router.route("/users/delete").delete(authMiddleware, deleteUser);
+
+// *********** USER ROUTES ********************
+router.route("/posts/create").post(authMiddleware, createPost);
+router.route("/posts/update").post(authMiddleware, updatePost);
+router.route("/posts/delete").post(authMiddleware, deletePost);
+
 export { router };
