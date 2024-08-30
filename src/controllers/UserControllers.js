@@ -123,10 +123,11 @@ async function getuser(req, res) {
   try {
     const userid = req.userid;
 
-    const user = await User.findById(userid)
-      .populate(["posts", "followers", "following"])
-      .select();
-
+    const user = await User.findById(userid).populate([
+      "posts",
+      "followers",
+      "following",
+    ]);
     return res
       .status(200)
       .json(

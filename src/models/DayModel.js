@@ -18,7 +18,7 @@ const DaySchema = new Schema(
       type: String,
       required: true,
     },
-    photos: [{ type: Schema.Types.ObjectId, ref: "Photo" }],
+    photos: [{ type: String, required: true }],
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
