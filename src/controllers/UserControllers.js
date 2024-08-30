@@ -479,6 +479,137 @@ async function updateUser(req, res) {
   }
 }
 
+async function followUser(req, res) {
+  try {
+    const anotherUserId = req.params.id;
+
+    if (!anotherUserId) {
+      return res
+        .status(400)
+        .json(
+          new ApiResponse(400, "Another user id is required", {}, false).error()
+        );
+    }
+
+    // find both user and updated them
+
+    const followUser = await User.findById(req.userid);
+    const followingUser = await User.findById(anotherUserId);
+
+    if (!followUser || !followingUser) {
+      return res
+        .status(400)
+        .json(
+          new ApiResponse(
+            400,
+            "Invalid Request Not found users.",
+            {},
+            false
+          ).error()
+        );
+    }
+
+    const updatedUserFollow = await User.findByIdAndUpdate(followUser._id, {
+      $push: {
+        following: followingUser._id,
+      },
+    });
+
+    await User.findByIdAndUpdate(followingUser._id, {
+      $push: {
+        followers: followUser._id,
+      },
+    });
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Follow Successfully.", {}, true).userInfo(
+          updatedUserFollow
+        )
+      );
+  } catch (error) {
+    ApiResponse.handleError(res, error);
+  }
+}
+
+async function unfollowUser(req, res) {
+  try {
+    const anotherUserId = req.params.id;
+
+    if (!anotherUserId) {
+      return res
+        .status(400)
+        .json(
+          new ApiResponse(400, "Another user id is required", {}, false).error()
+        );
+    }
+
+    // find both user and updated them
+
+    const followUser = await User.findById(req.userid);
+    const followingUser = await User.findById(anotherUserId);
+
+    if (!followUser || !followingUser) {
+      return res
+        .status(400)
+        .json(
+          new ApiResponse(
+            400,
+            "Invalid Request Not found users.",
+            {},
+            false
+          ).error()
+        );
+    }
+
+    const updatedUserFollow = await User.findByIdAndUpdate(followUser._id, {
+      $pull: {
+        following: followingUser._id,
+      },
+    });
+
+    await User.findByIdAndUpdate(followingUser._id, {
+      $pull: {
+        followers: followUser._id,
+      },
+    });
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "unfollow Successfully.", {}, true).userInfo(
+          updatedUserFollow
+        )
+      );
+  } catch (error) {
+    ApiResponse.handleError(res, error);
+  }
+}
+
+async function getUserProfile(req, res) {
+  try {
+    const userId = req.params.id;
+
+    const user = User.findById(userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json(new ApiResponse(400, "User not found.", {}, false).error());
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "User fetch successfully.", {}, false).userInfo(
+          user
+        )
+      );
+  } catch (error) {
+    ApiResponse.handleError(res, error);
+  }
+}
+
 export {
   registerUser,
   loginUser,
@@ -489,4 +620,7 @@ export {
   resetPassword,
   deleteUser,
   updateUser,
+  followUser,
+  unfollowUser,
+  getUserProfile,
 };

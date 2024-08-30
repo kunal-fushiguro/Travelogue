@@ -1,12 +1,15 @@
 import { Router } from "express";
 import {
   deleteUser,
+  followUser,
   getuser,
+  getUserProfile,
   loginUser,
   logoutUser,
   registerUser,
   resetPassword,
   sendOtp,
+  unfollowUser,
   updateUser,
   verifyUser,
 } from "../controllers/UserControllers.js";
@@ -29,6 +32,9 @@ router.route("/users/verify").patch(authMiddleware, verifyUser);
 router.route("/users/reset").patch(authMiddleware, resetPassword);
 router.route("/users/update").patch(authMiddleware, updateUser);
 router.route("/users/delete").delete(authMiddleware, deleteUser);
+router.route("/users/follow/:id").put(authMiddleware, followUser);
+router.route("/users/unfollow/:id").delete(authMiddleware, unfollowUser);
+router.route("/users/profile/:id").get(getUserProfile);
 
 // *********** USER ROUTES ********************
 router.route("/posts/create").post(authMiddleware, createPost);
