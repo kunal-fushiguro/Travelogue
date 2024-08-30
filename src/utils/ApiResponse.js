@@ -40,6 +40,7 @@ class ApiResponse {
       statusCode: this.statusCode,
       success: this.success,
       data: {
+        userid: user._id,
         username: user.username,
         email: user.email,
         profilePic: user.profilePic,

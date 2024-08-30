@@ -37,9 +37,13 @@ async function createPost(req, res) {
     });
 
     // update user
-    const updatedUser = await User.findByIdAndUpdate(user._id, {
-      $push: { posts: newPost._id },
-    }).populate("posts");
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      {
+        $push: { posts: newPost._id },
+      },
+      { new: true }
+    ).populate("posts");
 
     return res
       .status(201)
@@ -106,14 +110,73 @@ async function deletePost(req, res) {
 
     // delete post and delete post id from user as well
     await Post.findByIdAndDelete(post._id);
-    const updatedUser = User.findByIdAndUpdate(post.userid, {
-      $pull: {
-        posts: post._id,
+    const updatedUser = await User.findByIdAndUpdate(
+      post.userid,
+      {
+        $pull: {
+          posts: post._id,
+        },
       },
-    });
+      { new: true }
+    );
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Post deleted successFully.", {}, true).userInfo(
+          updatedUser
+        )
+      );
   } catch (error) {
     ApiResponse.handleError(res, error);
   }
 }
 
-export { createPost, updatePost, deletePost };
+async function allPosts(req, res) {
+  try {
+    const querys = req.query;
+
+    // find post and send it back
+
+    const posts = await Post.find({ isPublic: true })
+      .limit(querys.limit)
+      .skip(querys.skip);
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Posts fetched successfully", { ...posts }, true)
+      );
+  } catch (error) {
+    ApiResponse.handleError(res, error);
+  }
+}
+
+async function getPosts(req, res) {
+  try {
+    const postId = req.params.id;
+
+    // find post and send it
+    const post = await Post.findById(postId); // populate days here
+    if (!post) {
+      return res
+        .status(404)
+        .json(new ApiResponse(404, "POst not found.", {}, false).error());
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          "Post fetched successfully",
+          { post: post._doc },
+          true
+        )
+      );
+  } catch (error) {
+    ApiResponse.handleError(res, error);
+  }
+}
+
+export { createPost, updatePost, deletePost, allPosts, getPosts };

@@ -17,6 +17,8 @@ import {
   createPost,
   updatePost,
   deletePost,
+  allPosts,
+  getPosts,
 } from "../controllers/JourneyControllers.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
@@ -38,7 +40,9 @@ router.route("/users/profile/:id").get(getUserProfile);
 
 // *********** USER ROUTES ********************
 router.route("/posts/create").post(authMiddleware, createPost);
-router.route("/posts/update").post(authMiddleware, updatePost);
-router.route("/posts/delete").post(authMiddleware, deletePost);
+router.route("/posts/update").patch(authMiddleware, updatePost);
+router.route("/posts/delete").delete(authMiddleware, deletePost);
+router.route("/posts").get(allPosts);
+router.route("/posts/:id").get(getPosts);
 
 export { router };

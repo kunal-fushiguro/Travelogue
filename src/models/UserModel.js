@@ -14,10 +14,12 @@ const UserSchema = new Schema(
     password: {
       type: String,
       required: true,
+      select: false,
     },
     token: {
       type: String,
       default: null,
+      select: false,
     },
     profilePic: {
       type: String,
@@ -34,10 +36,12 @@ const UserSchema = new Schema(
     otp: {
       type: Number,
       default: null,
+      select: false,
     },
     otpExpiry: {
       type: Date,
       default: null,
+      select: false,
     },
     posts: [
       {

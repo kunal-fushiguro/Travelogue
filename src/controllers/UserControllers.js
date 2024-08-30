@@ -55,7 +55,7 @@ async function loginUser(req, res) {
 
     const { email, password } = body;
     // find user
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email }).select("+password");
 
     if (!user) {
       return res
@@ -77,6 +77,7 @@ async function loginUser(req, res) {
     }
 
     // generate token
+
     const jwtToken = await generateToken(user._id);
 
     const updatedUser = await User.findByIdAndUpdate(user._id, {
@@ -122,7 +123,9 @@ async function getuser(req, res) {
   try {
     const userid = req.userid;
 
-    const user = await User.findById(userid).populate("posts");
+    const user = await User.findById(userid)
+      .populate(["posts", "followers", "following"])
+      .select();
 
     return res
       .status(200)
@@ -509,11 +512,15 @@ async function followUser(req, res) {
         );
     }
 
-    const updatedUserFollow = await User.findByIdAndUpdate(followUser._id, {
-      $push: {
-        following: followingUser._id,
+    const updatedUserFollow = await User.findByIdAndUpdate(
+      followUser._id,
+      {
+        $push: {
+          following: followingUser._id,
+        },
       },
-    });
+      { new: true }
+    );
 
     await User.findByIdAndUpdate(followingUser._id, {
       $push: {
@@ -563,11 +570,15 @@ async function unfollowUser(req, res) {
         );
     }
 
-    const updatedUserFollow = await User.findByIdAndUpdate(followUser._id, {
-      $pull: {
-        following: followingUser._id,
+    const updatedUserFollow = await User.findByIdAndUpdate(
+      followUser._id,
+      {
+        $pull: {
+          following: followingUser._id,
+        },
       },
-    });
+      { new: true }
+    );
 
     await User.findByIdAndUpdate(followingUser._id, {
       $pull: {
@@ -591,7 +602,7 @@ async function getUserProfile(req, res) {
   try {
     const userId = req.params.id;
 
-    const user = User.findById(userId);
+    const user = await User.findById(userId);
     if (!user) {
       return res
         .status(404)
